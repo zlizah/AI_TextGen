@@ -16,7 +16,6 @@ public class Main {
 			out.writeObject(n_gram);
 			out.close();
 			fileOut.close();
-			System.out.printf("Serialized data is saved in /ngrams/onegram.ser");
 		} catch(IOException i) {
 			System.out.println("Exception occured");
 			i.printStackTrace();
@@ -50,6 +49,7 @@ public class Main {
     
     //Main
     public static void main(String[] args) throws IOException, FileNotFoundException {
+		int words = 100;
 		ArrayList<N_gram> n_grams = new ArrayList<N_gram>();
         
 		//Check arg exists
@@ -63,7 +63,7 @@ public class Main {
 		if (args[0].equals("file")) {
 			//Read map from file
 			oneGrams = CorpusParser.readNgramsFromFile("../ngrams/onegram.ser");
-			printMapContents(oneGrams);
+			//printMapContents(oneGrams);
 			
 			//Error check
 			if (oneGrams == null) {
@@ -72,7 +72,7 @@ public class Main {
 		} else if (args[0].equals("corpus")) {
 			//Read map from kropus
 			oneGrams = CorpusParser.readFromKorpus("../corpus/corpus.txt");
-			printMapContents(oneGrams);
+			//printMapContents(oneGrams);
 			printToFile(oneGrams);
 			
 			//Error check
@@ -86,6 +86,10 @@ public class Main {
 		
 		//Send n-grams to TextGenerator
 		TextGenerator textGen = new TextGenerator(n_grams);	
+		
+		//Generate text
+		String text = textGen.generateText(words);
+		System.out.println(text);
     }
 }
 

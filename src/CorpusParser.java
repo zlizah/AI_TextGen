@@ -16,8 +16,6 @@ public class CorpusParser {
             System.out.println("Exception occured in read");
             System.exit(1);
         }
-        System.out.println("Reading successful");
-        System.out.println("Map size was: " + n_grams.size());
 		
 		return n_grams;
     }
