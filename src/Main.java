@@ -3,8 +3,8 @@ import java.util.*;
 import java.io.*;
 
 //TODO skiljetecken
-//TODO generera text 
-//TODO change hashset to list and randomize index
+//TODO fixa så att vissa saker är parametrar/nånting istället för hårdkodat
+//TODO konstiga tecken som uppkommer
 
 public class Main {
 	//Print n-grams to file
@@ -49,7 +49,7 @@ public class Main {
     
     //Main
     public static void main(String[] args) throws IOException, FileNotFoundException {
-		int words = 100;
+		int words = 300;
 		ArrayList<N_gram> n_grams = new ArrayList<N_gram>();
         
 		//Check arg exists

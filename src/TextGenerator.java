@@ -18,7 +18,17 @@ public class TextGenerator {
 	//Generator
 	public String generateText(int words) {
 		StringBuilder text = new StringBuilder();
-		String oldWord = "The";
+
+		//Generate a random first word
+		ArrayList<String> firstWords = null;
+		for (int i = 0; i < n_grams.size(); i++) {
+			if (n_grams.get(i).n == 1) {
+				firstWords = n_grams.get(i).getKeys();
+				break;
+			}
+		}
+		int randFirstInt = rng.nextInt(firstWords.size()); //0 -> size -1
+		String oldWord = firstWords.get(randFirstInt);
 		text.append(oldWord);
 		
 		//Loop until enough words
@@ -37,6 +47,7 @@ public class TextGenerator {
 				for (int i = 0; i < n_grams.size(); i++) {
 					if (n_grams.get(i).n == 1) {
 						wordChoices = n_grams.get(i).getKeys();
+						break;
 					}
 				}
 			}
