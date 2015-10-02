@@ -64,7 +64,7 @@ public class CorpusParser {
 				new HashMap<String, ArrayList<String>>();
         BufferedReader br = new BufferedReader(new FileReader(path));
        
-        //Treate header separatly
+        //Treat header separately
         String header = br.readLine();
         
         //Regular line
@@ -74,24 +74,23 @@ public class CorpusParser {
             String[] words = line.split(" ");
             
             //Iterate through all the words on this line
-            for (int i = 0; i < words.length; i++) {
+            for (String word : words) {
                 //Find the index word
-                String word = words[i];
                 ArrayList<String> currentWords = n_grams.get(oldWord);
-                
+
                 //If no mapping exists for the previous word, create a new list
                 if (currentWords == null) {
                     currentWords = new ArrayList<String>();
                     currentWords.add(word);
                     n_grams.put(oldWord, currentWords);
-                } 
-                //Else just appends this word as one of the possibilityies
+                }
+                //Else just appends this word as one of the possibilities
                 else {
                     currentWords.add(word);
                 }
-                
+
                 //Update old word
-                oldWord = word;     
+                oldWord = word;
             }
             
             //Read next line

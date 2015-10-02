@@ -21,19 +21,19 @@ public class TextGenerator {
 
 		//Generate a random first word
 		ArrayList<String> firstWords = null;
-		for (int i = 0; i < n_grams.size(); i++) {
-			if (n_grams.get(i).n == 1) {
-				firstWords = n_grams.get(i).getKeys();
-				break;
-			}
-		}
+        for (N_gram n_gram : n_grams) {
+            if (n_gram.n == 1) {
+                firstWords = n_gram.getKeys();
+                break;
+            }
+        }
 		int randFirstInt = rng.nextInt(firstWords.size()); //0 -> size -1
 		String oldWord = firstWords.get(randFirstInt);
 		text.append(oldWord);
 		
 		//Loop until enough words
 		for (int index = 0; index < words; index ++) {
-			//Fetch word chocies
+			//Fetch word choices
 			ArrayList<String> wordChoices = null;
 			for (int j = n_grams.size() - 1; j >= 0; j--) {
 				wordChoices = n_grams.get(j).getWordChoices(oldWord);
@@ -44,12 +44,12 @@ public class TextGenerator {
 			
 			//Pick random word from oneGrams if no choices found
 			if (wordChoices == null) {
-				for (int i = 0; i < n_grams.size(); i++) {
-					if (n_grams.get(i).n == 1) {
-						wordChoices = n_grams.get(i).getKeys();
-						break;
-					}
-				}
+                for (N_gram n_gram : n_grams) {
+                    if (n_gram.n == 1) {
+                        wordChoices = n_gram.getKeys();
+                        break;
+                    }
+                }
 			}
 			
 			//Pick a random word from the list
