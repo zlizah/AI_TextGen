@@ -81,6 +81,7 @@ public class Main {
 			}
 		} else {
 			System.out.println("Invalid argument");
+			System.exit(0);
 		}
 		n_grams.add(new N_gram(1, oneGrams));
 		
