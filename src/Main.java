@@ -89,7 +89,7 @@ public class Main {
 		TextGenerator textGen = new TextGenerator(new NGrams(oneGrams));
 		
 		//Generate text
-		String text = textGen.generateText(words);
+		String text = textGen.generateText(words, "The");
 		System.out.println(text);
     }
 }

@@ -38,9 +38,10 @@ public class TextGenerator {
 		text.append(firstWord);
 		
 		//Loop until enough words
-		for (int index = 0; index < words; index ++) {
+        int sentenceLength = 1;
+		for (int index = 0; index < words || !firstWord.endsWith("."); index ++) {
 			//Fetch word choices
-			String nextWord = n_grams.getWordChoices(firstWord).getNextWord();
+			String nextWord = n_grams.getWordChoices(firstWord).getNextWord(sentenceLength);
 
 			
 			//Pick random word from oneGrams if no choices found
@@ -51,6 +52,12 @@ public class TextGenerator {
                 nextWord = wordChoices.get(randInt);
 			}
 
+            // End sentence
+            if (nextWord.endsWith(".")) {
+                sentenceLength = 0;
+            } else {
+                ++sentenceLength;
+            }
 
             text.append(" ");
             text.append(nextWord);

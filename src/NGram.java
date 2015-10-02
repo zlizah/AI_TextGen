@@ -5,13 +5,15 @@ import java.util.Random;
 
 public class NGram implements Serializable {
 
+    private final static int OPTIMAL_SENTENCE_LENGTH = 10;
+
     // The amount of words this n-gram depends on
     public final int n;
-    public final HashMap<String, Integer> occurences;
+    public final HashMap<String, Integer> occurrences;
 
     public NGram(int n) {
         this.n = n;
-        this.occurences = new HashMap<>();
+        this.occurrences = new HashMap<>();
     }
 
     /**
@@ -21,10 +23,10 @@ public class NGram implements Serializable {
      */
     public void addObservation(String word) {
         int next = 1;
-        if (occurences.containsKey(word)) {
-            next = occurences.get(word) + 1;
+        if (occurrences.containsKey(word)) {
+            next = occurrences.get(word) + 1;
         }
-        occurences.put(word, next);
+        occurrences.put(word, next);
     }
 
 
@@ -32,23 +34,34 @@ public class NGram implements Serializable {
      * Consider what words usually follow after this n-gram and return the most likely.
      * @return
      */
-    public String getNextWord() {
+    public String getNextWord(int currentSentenceLength) {
         // Get the most common word
         ArrayList<String> commonWords = new ArrayList<>();
-        int maxOccurences = 0;
-        for (String w : occurences.keySet()) {
-            if (maxOccurences < occurences.get(w)) {
-                maxOccurences = occurences.get(w);
+        int maxOccurrences = 0;
+        for (String w : occurrences.keySet()) {
+            int wordValue = occurrences.get(w);
+
+            // Treat end-of-sentence differently depending on current sentence length
+            if (w.endsWith(".")) {
+                wordValue = periodEvaluation(wordValue, currentSentenceLength);
+            }
+
+            if (maxOccurrences < wordValue) {
+                maxOccurrences = wordValue;
                 commonWords.clear();
                 commonWords.add(w);
-            } else if (maxOccurences == occurences.get(w)) {
+            } else if (maxOccurrences == wordValue) {
                 commonWords.add(w);
             }
         }
 
         String nextWord = getRandomWord(commonWords);
-        occurences.put(nextWord, Math.max(1, occurences.get(nextWord) - 1));
+        occurrences.put(nextWord, Math.max(1, occurrences.get(nextWord) - 1));
         return nextWord;
+    }
+
+    private int periodEvaluation(int value, int currentSentenceLength) {
+        return (int) (Math.abs(currentSentenceLength - OPTIMAL_SENTENCE_LENGTH) * 0.2 * value);
     }
 
     public String getRandomWord(ArrayList<String> list) {
