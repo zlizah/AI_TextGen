@@ -8,7 +8,7 @@ import java.io.*;
 
 public class Main {
 	//Print n-grams to file
-	private static void printToFile(HashMap<String, ArrayList<String>> n_gram) {
+	private static void printToFile(HashMap<String, NGram> n_gram) {
 		//Print one gram map to a file
 		try {
 			FileOutputStream fileOut = new FileOutputStream("../ngrams/onegram.ser");
@@ -50,7 +50,7 @@ public class Main {
     //Main
     public static void main(String[] args) throws IOException, FileNotFoundException {
 		int words = 300;
-		ArrayList<N_gram> n_grams = new ArrayList<N_gram>();
+		ArrayList<NGrams> n_grams = new ArrayList<NGrams>();
         
 		//Check arg exists
 		if (args.length == 0) {
@@ -59,7 +59,7 @@ public class Main {
 		}
 		
 		//Check arg to determine if read from file or korpus
-		HashMap<String, ArrayList<String>> oneGrams = null;
+		HashMap<String, NGram> oneGrams = null;
 		if (args[0].equals("file")) {
 			//Read map from file
 			oneGrams = CorpusParser.readNgramsFromFile("../ngrams/onegram.ser");
@@ -70,8 +70,8 @@ public class Main {
 				System.out.println("Could not read ngrams from file");
 			}
 		} else if (args[0].equals("corpus")) {
-			//Read map from kropus
-			oneGrams = CorpusParser.readFromKorpus("../corpus/corpus.txt");
+			//Read map from korpus
+			oneGrams = CorpusParser.readCorpus("../corpus/corpus.txt");
 			//printMapContents(oneGrams);
 			printToFile(oneGrams);
 			
@@ -83,10 +83,10 @@ public class Main {
 			System.out.println("Invalid argument");
 			System.exit(0);
 		}
-		n_grams.add(new N_gram(1, oneGrams));
+//		n_grams.add();
 		
 		//Send n-grams to TextGenerator
-		TextGenerator textGen = new TextGenerator(n_grams);	
+		TextGenerator textGen = new TextGenerator(new NGrams(oneGrams));
 		
 		//Generate text
 		String text = textGen.generateText(words);

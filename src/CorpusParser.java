@@ -6,28 +6,27 @@ import java.io.*;
  * Reads corpus into hashmap
  */
 public class CorpusParser {   
-	//Reads n-grams from the provided korpus
-    public static HashMap<String, ArrayList<String>> readFromKorpus(String path) {
-		HashMap<String, ArrayList<String>> n_grams = null;
-        try {
-            n_grams = readCorpus(path);
-        } catch (Exception e) {
-			System.out.println(e);
-            System.out.println("Exception occured in read");
-            System.exit(1);
-        }
-		
-		return n_grams;
-    }
+//	//Reads n-grams from the provided korpus
+//    public static HashMap<String, ArrayList<String>> readFromKorpus(String path) {
+//		HashMap<String, NGram> n_grams = null;
+//        try {
+//            n_grams = readCorpus(path);
+//        } catch (Exception e) {
+//			System.out.println(e);
+//            System.out.println("Exception occured in read");
+//            System.exit(1);
+//        }
+//
+//		return n_grams;
+//    }
 	
 		
 	//Read onegram hashmap from file
 	@SuppressWarnings("unchecked")
-	public static HashMap<String, ArrayList<String>> readNgramsFromFile(String path) {
+	public static HashMap<String, NGram> readNgramsFromFile(String path) {
 		//Read the mapobject from the file
-		HashMap<String, ArrayList<String>> n_grams = 
-				new HashMap<String, ArrayList<String>>();
-		Object mapobj = null;
+		HashMap<String, NGram> n_grams;
+		Object mapobj;
 		try {
 			FileInputStream fileIn = new FileInputStream(path);
 			ObjectInputStream in = new ObjectInputStream(fileIn);
@@ -45,11 +44,11 @@ public class CorpusParser {
 		
 		//Cast mapobj to a hashmap 
 		if (mapobj instanceof HashMap<?, ?>) {
-			n_grams = (HashMap<String, ArrayList<String>>) mapobj; 
+			n_grams = (HashMap<String, NGram>) mapobj;
 		} else {
 			System.out.println("Could not map file to hashmap");
 			System.exit(2);
-			n_grams = new HashMap<String, ArrayList<String>>();
+			n_grams = new HashMap<>();
 		}
 		
 		//Print map contents
@@ -57,11 +56,9 @@ public class CorpusParser {
 	}
 	
 	//Read the corpus file into n-grams
-    private static HashMap<String, ArrayList<String>> readCorpus(String path) 
-			throws IOException, FileNotFoundException {
+    public static HashMap<String, NGram> readCorpus(String path) throws IOException {
 		//Variables
-		HashMap<String, ArrayList<String>> n_grams = 
-				new HashMap<String, ArrayList<String>>();
+		HashMap<String, NGram> n_grams = new HashMap<>();
         BufferedReader br = new BufferedReader(new FileReader(path));
        
         //Treat header separately
@@ -80,7 +77,7 @@ public class CorpusParser {
 
                 //If no mapping exists for the previous word, create a new list
                 if (currentWords == null) {
-                    currentWords = new ArrayList<String>();
+                    currentWords = new ArrayList<>();
                     currentWords.add(word);
                     n_grams.put(oldWord, currentWords);
                 }

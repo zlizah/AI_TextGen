@@ -1,4 +1,3 @@
-
 import java.util.*;
 
 /**
@@ -6,58 +5,56 @@ import java.util.*;
  */
 public class TextGenerator {
 	//Fields
-	ArrayList<N_gram> n_grams;
+	NGrams n_grams;
 	Random rng;
 	
 	//Constructor
-	public TextGenerator(ArrayList<N_gram> n_grams) {
+	public TextGenerator(NGrams n_grams) {
 		this.n_grams = n_grams;
 		rng = new Random();
 	}
 	
 	//Generator
 	public String generateText(int words) {
-		StringBuilder text = new StringBuilder();
 
-		//Generate a random first word
-		ArrayList<String> firstWords = null;
-        for (N_gram n_gram : n_grams) {
-            if (n_gram.n == 1) {
-                firstWords = n_gram.getKeys();
-                break;
-            }
-        }
-		int randFirstInt = rng.nextInt(firstWords.size()); //0 -> size -1
-		String oldWord = firstWords.get(randFirstInt);
-		text.append(oldWord);
+        //Generate a random first word
+        ArrayList<String> firstWords = null;
+
+        firstWords = n_grams.getKeys();
+
+        int randFirstInt = rng.nextInt(firstWords.size()); //0 -> size -1
+        String firstWord = firstWords.get(randFirstInt);
+        return generateText(words, firstWord);
+    }
+
+    /**
+     * Generate a bunch of text
+     * @param words the amount of words in the text
+     * @param firstWord the initial start word. Might be several words.
+     * @return the text
+     */
+    public String generateText(int words, String firstWord) {
+        StringBuilder text = new StringBuilder();
+		text.append(firstWord);
 		
 		//Loop until enough words
 		for (int index = 0; index < words; index ++) {
 			//Fetch word choices
-			ArrayList<String> wordChoices = null;
-			for (int j = n_grams.size() - 1; j >= 0; j--) {
-				wordChoices = n_grams.get(j).getWordChoices(oldWord);
-				if (wordChoices != null) {
-					break;
-				}
-			}
+			String nextWord = n_grams.getWordChoices(firstWord).getNextWord();
+
 			
 			//Pick random word from oneGrams if no choices found
-			if (wordChoices == null) {
-                for (N_gram n_gram : n_grams) {
-                    if (n_gram.n == 1) {
-                        wordChoices = n_gram.getKeys();
-                        break;
-                    }
-                }
+			if (nextWord == null) {
+                ArrayList<String> wordChoices = n_grams.getKeys();
+                //Pick a random word from the list
+                int randInt = rng.nextInt(wordChoices.size()); //0 -> size -1
+                nextWord = wordChoices.get(randInt);
 			}
-			
-			//Pick a random word from the list
-			int randInt = rng.nextInt(wordChoices.size()); //0 -> size -1
-			String word = wordChoices.get(randInt);
-			text.append(" ");
-			text.append(word);
-			oldWord = word;
+
+
+            text.append(" ");
+            text.append(nextWord);
+            firstWord = nextWord;
 		}
 		
 		return text.toString();
