@@ -5,7 +5,8 @@ import java.io.*;
 /**
  * Reads corpus into hashmap
  */
-public class CorpusParser {   
+public class CorpusParser {
+    private final static int N = 1;
 //	//Reads n-grams from the provided korpus
 //    public static HashMap<String, ArrayList<String>> readFromKorpus(String path) {
 //		HashMap<String, NGram> n_grams = null;
@@ -73,18 +74,14 @@ public class CorpusParser {
             //Iterate through all the words on this line
             for (String word : words) {
                 //Find the index word
-                ArrayList<String> currentWords = n_grams.get(oldWord);
+                NGram currentNGram = n_grams.get(oldWord);
 
                 //If no mapping exists for the previous word, create a new list
-                if (currentWords == null) {
-                    currentWords = new ArrayList<>();
-                    currentWords.add(word);
-                    n_grams.put(oldWord, currentWords);
+                if (currentNGram == null) {
+                    currentNGram = new NGram(N);
+                    n_grams.put(oldWord, currentNGram);
                 }
-                //Else just appends this word as one of the possibilities
-                else {
-                    currentWords.add(word);
-                }
+                currentNGram.addObservation(word);
 
                 //Update old word
                 oldWord = word;

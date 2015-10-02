@@ -10,4 +10,12 @@ public class NGram {
         this.n = n;
         this.occurences = new HashMap<>();
     }
+
+    public void addObservation(String word) {
+    }
+
+
+    public String getNextWord() {
+        return null;
+    }
 }
