@@ -1,6 +1,9 @@
+import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Random;
 
-public class NGram {
+public class NGram implements Serializable {
 
     // The amount of words this n-gram depends on
     public final int n;
@@ -31,12 +34,27 @@ public class NGram {
      */
     public String getNextWord() {
         // Get the most common word
-        String maxWord = "";
+        ArrayList<String> commonWords = new ArrayList<>();
+        int maxOccurences = 0;
         for (String w : occurences.keySet()) {
-            if (maxWord.equals("") || occurences.get(maxWord) < occurences.get(w)) {
-                maxWord = w;
+            if (maxOccurences < occurences.get(w)) {
+                maxOccurences = occurences.get(w);
+                commonWords.clear();
+                commonWords.add(w);
+            } else if (maxOccurences == occurences.get(w)) {
+                commonWords.add(w);
             }
         }
-        return maxWord;
+
+        String nextWord = getRandomWord(commonWords);
+        occurences.put(nextWord, Math.max(1, occurences.get(nextWord) - 1));
+        return nextWord;
+    }
+
+    public String getRandomWord(ArrayList<String> list) {
+        Random rng = new Random();
+
+        int randInt = rng.nextInt(list.size()); //0 -> size -1
+        return list.get(randInt);
     }
 }
