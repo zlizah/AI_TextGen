@@ -1,14 +1,18 @@
+
 import java.util.HashMap;
+import java.util.Random;
 
 public class NGram {
 
     // The amount of words this n-gram depends on
     public final int n;
+    public int sumOccurances;
     public final HashMap<String, Integer> occurences;
 
     public NGram(int n) {
         this.n = n;
         this.occurences = new HashMap<>();
+        sumOccurances = 0;
     }
 
     /**
@@ -22,21 +26,29 @@ public class NGram {
             next = occurences.get(word) + 1;
         }
         occurences.put(word, next);
+        sumOccurances += 1;
     }
-
-
-    /**
-     * Consider what words usually follow after this n-gram and return the most likely.
-     * @return
+    
+    /** 
+     * Get a randomly distributed word over this set of words.
      */
-    public String getNextWord() {
-        // Get the most common word
-        String maxWord = "";
-        for (String w : occurences.keySet()) {
-            if (maxWord.equals("") || occurences.get(maxWord) < occurences.get(w)) {
-                maxWord = w;
+    public String getDistributedWord() {
+        Random rng = new Random();
+        int index = rng.nextInt(sumOccurances);
+        for (String word : occurences.keySet()) {
+            index -= occurences.get(word);
+            if (index <= 0) {
+                return word;
             }
         }
-        return maxWord;
+        return null;
+    }
+    
+    public int getOccurances() {
+    	return sumOccurances;
+    }
+    
+    public boolean isEmpty() {
+    	return occurences.isEmpty();
     }
 }
