@@ -6,20 +6,7 @@ import java.io.*;
  * Reads corpus into hashmap
  */
 public class CorpusParser {
-    private final static int N = 1;
-//	//Reads n-grams from the provided korpus
-//    public static HashMap<String, ArrayList<String>> readFromKorpus(String path) {
-//		HashMap<String, NGram> n_grams = null;
-//        try {
-//            n_grams = readCorpus(path);
-//        } catch (Exception e) {
-//			System.out.println(e);
-//            System.out.println("Exception occured in read");
-//            System.exit(1);
-//        }
-//
-//		return n_grams;
-//    }
+    private final static int N = 1; // Size of n-grams
 	
 		
 	//Read onegram hashmap from file
