@@ -22,26 +22,26 @@ public class TextGenerator {
 	public String generateText(int words) {
         //Generate a random first word
         ArrayList<String> firstWords = null;
-
-        firstWords = biGrams.getKeys();
-
-        int randFirstInt = rng.nextInt(firstWords.size()); //0 -> size -1
-        String firstWord = firstWords.get(randFirstInt);
-        return generateText(words, firstWord);
+        ArrayList<String> startWords = CorpusParser.getStartWords();
+        int randFirstInt = rng.nextInt(startWords.size()); //0 -> size -1
+        String startWord = startWords.get(randFirstInt);
+        return generateText(words, startWord);
     }
 	
 	private String getDistributedWord(NGram biWord, NGram triWord, NGram quadWord, int sentenceLength) {
 		//TODO Empty lists?
 		Random rng = new Random(65);
 		
-		int temp = 3;
+		int temp = 100;
 		if (quadWord.isEmpty()) temp = 2;
 		if (triWord.isEmpty()) temp = 1;
 		if (biWord.isEmpty()) return null;
 		int index = rng.nextInt(temp);
-		if (index == 0) {
+		
+		//Very good distribution, DO NOT TOUCH! 20/60/20
+		if (index < 20) {
 			return biWord.getNextWord(sentenceLength);
-		} else if (index == 1) {
+		} else if (index < 60) {
 			return triWord.getNextWord(sentenceLength);
 		} else {
 			return quadWord.getNextWord(sentenceLength);
@@ -60,12 +60,10 @@ public class TextGenerator {
 		LinkedList<String> wordQueue = new LinkedList<>();
 		wordQueue.addFirst(firstWord);
 		
-		//Loop until enough words
+		//Loop until enough words, make sure to end text with a period (.)
         int sentenceLength = 1;
-		for (int index = 0; index < words/* || !firstWord.endsWith(".")*/; index ++) { // Make sure to end with a period
-			//Fetch word choices
-//			String nextWord = n_grams.getWordChoices(firstWord).getNextWord(sentenceLength);
-
+		for (int index = 0; index < words || !wordQueue.getFirst().contains("."); 
+		        index ++) {
 			//Fetch old words
 			String oldWord_one = wordQueue.getFirst();
 			String oldWord_two = null;

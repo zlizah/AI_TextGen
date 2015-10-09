@@ -7,6 +7,7 @@ import java.io.*;
  */
 public class CorpusParser {
     private final static int N = 1; // Size of n-grams
+    private static ArrayList<String> startWords;
 	
 		
 	//Read onegram hashmap from file
@@ -43,12 +44,17 @@ public class CorpusParser {
 		return n_grams;
 	}
 	
+	public static ArrayList<String> getStartWords() {
+	    return startWords;
+	}
+	
 	//Read the corpus file into n-grams
     public static ArrayList<NGrams> readCorpus(String path) throws IOException {
 		//Grams
 		HashMap<String, NGram> bi_grams = new HashMap<>();
 		HashMap<String, NGram> tri_grams = new HashMap<>();
 		HashMap<String, NGram> quad_grams = new HashMap<>();
+		startWords = new ArrayList<String>();
 		
 		//Reader
         BufferedReader br = new BufferedReader(new FileReader(path));
@@ -62,10 +68,31 @@ public class CorpusParser {
         //Go through the corpus
         String line = br.readLine();
         while (line != null) {
+            //Remove unnecesary whitespace
+            line = line.trim().replaceAll("\\s+", " ");
+            
+            
+            //Replace -- with ,
+            line = line.replaceAll(" --", ",");
+            line = line.replaceAll(" –-", ",");
+               
+            //Split line into words    
             String[] words = line.split(" ");
             
             //Iterate through all the words on this line
             for (String word : words) {
+                //Avoid extra whitespace
+                word = word.trim();
+            
+                //Caps check except I and A
+                if(word.matches("([A-Z])+(:?)")&& !word.equals("I") 
+                        && !word.equals("A")) {
+                    continue;
+                }
+                
+                // (Apllause and laughter)
+                if(word.startsWith("(") && word.endsWith(")")) continue;
+                
                 //BI-GRAMS
             	String oldWord_one = null;
             	if (wordQueue.size() >= 1) oldWord_one = wordQueue.get(0);
@@ -119,6 +146,12 @@ public class CorpusParser {
                     quadruple.addObservation(word);
                 }
 
+                //Append to list of start words (possibly)
+                if (word.length() > 1 && !word.equals("And") 
+                        && word.substring(0, 1).matches("[A-Z]")) {
+                    startWords.add(word);
+                }
+
                 //Update old word
                 if (oldWord_three != null) wordQueue.removeLast();
                 wordQueue.addFirst(word);
@@ -133,10 +166,11 @@ public class CorpusParser {
 		NGrams quad_gram = new NGrams(quad_grams);
 		
 		ArrayList<NGrams> ngrams = new ArrayList<NGrams>();
-		ngrams.add(quad_gram);
-		ngrams.add(tri_gram);
 		ngrams.add(bi_gram);
-		
+		ngrams.add(tri_gram);
+		ngrams.add(quad_gram);
+
+
 		return ngrams;
     }
 }

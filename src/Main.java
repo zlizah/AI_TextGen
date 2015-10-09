@@ -69,7 +69,7 @@ public class Main {
 			//}
 		} else if (args[0].equals("corpus")) {
 			//Read map from korpus
-			ngrams = CorpusParser.readCorpus("../corpus/corpus.txt");
+			ngrams = CorpusParser.readCorpus("../corpus/corpus_speeches.txt");
 			//printToFile(oneGrams); Doesnt work atm
 			
 			//Error check
@@ -87,9 +87,9 @@ public class Main {
 		for (String s : triGrams.keySet()) {
 			Set<String> set = triGrams.get(s).occurrences.keySet();
 			for (String ss : set) {
-				System.out.println("Word was: " + ss);
+				//System.out.println("Word was: " + ss);
 			}
-			System.out.println("******NEW KEY****");
+			//System.out.println("******NEW KEY****");
 		}
 //		System.exit(0);
 		System.out.println("Done");
@@ -98,7 +98,8 @@ public class Main {
         System.out.println("Generating");
 		
 		//Generate text
-		String text = textGen.generateText(words, "The");
+		String text = textGen.generateText(words);
+		text = text.replaceAll("\\s+", " ");
 		System.out.println(text);
     }
 }
