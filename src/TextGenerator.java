@@ -5,27 +5,48 @@ import java.util.*;
  */
 public class TextGenerator {
 	//Fields
-	NGrams n_grams;
+	NGrams biGrams;
+	NGrams triGrams;
+	NGrams quadGrams;
 	Random rng;
 	
 	//Constructor
-	public TextGenerator(NGrams n_grams) {
-		this.n_grams = n_grams;
+	public TextGenerator(ArrayList<NGrams> nGrams) {
+		biGrams = nGrams.get(0);
+		triGrams = nGrams.get(1);
+		quadGrams = nGrams.get(2);
 		rng = new Random();
 	}
 	
 	//Generator
 	public String generateText(int words) {
-
         //Generate a random first word
         ArrayList<String> firstWords = null;
 
-        firstWords = n_grams.getKeys();
+        firstWords = biGrams.getKeys();
 
         int randFirstInt = rng.nextInt(firstWords.size()); //0 -> size -1
         String firstWord = firstWords.get(randFirstInt);
         return generateText(words, firstWord);
     }
+	
+	private String getDistributedWord(NGram biWord, NGram triWord, NGram quadWord, int sentenceLength) {
+		//TODO Empty lists?
+		Random rng = new Random(65);
+		
+		int temp = 3;
+		if (quadWord.isEmpty()) temp = 2;
+		if (triWord.isEmpty()) temp = 1;
+		if (biWord.isEmpty()) return null;
+		int index = rng.nextInt(temp);
+		if (index == 0) {
+			return biWord.getNextWord(sentenceLength);
+		} else if (index == 1) {
+			return triWord.getNextWord(sentenceLength);
+		} else {
+			return quadWord.getNextWord(sentenceLength);
+		}
+	}
 
     /**
      * Generate a bunch of text
@@ -36,19 +57,51 @@ public class TextGenerator {
     public String generateText(int words, String firstWord) {
         StringBuilder text = new StringBuilder();
 		text.append(firstWord);
+		LinkedList<String> wordQueue = new LinkedList<>();
+		wordQueue.addFirst(firstWord);
 		
 		//Loop until enough words
         int sentenceLength = 1;
-		for (int index = 0; index < words || !firstWord.endsWith("."); index ++) {
+		for (int index = 0; index < words; index ++) { // Make sure to end with a period
 			//Fetch word choices
-			String nextWord = n_grams.getWordChoices(firstWord).getNextWord(sentenceLength);
+//			String nextWord = n_grams.getWordChoices(firstWord).getNextWord(sentenceLength);
 
+			//Fetch old words
+			String oldWord_one = wordQueue.getFirst();
+			String oldWord_two = null;
+			String oldWord_three = null;
+			if (wordQueue.size() >= 2) {
+				oldWord_two = wordQueue.get(1);
+			}
+			if (wordQueue.size() >= 3) {
+				oldWord_three = wordQueue.get(2);
+			}
 			
-			//Pick random word from oneGrams if no choices found
+			//Hash multiples
+			String[] triList = {oldWord_one, oldWord_two};
+			String[] quadList = {oldWord_one, oldWord_two, oldWord_three};
+			String triHash = StringHasher.hashWords(triList);
+			String quadHash = StringHasher.hashWords(quadList);
+			
+			//Generate next word, depending on the amount of available grams
+			String nextWord;
+			NGram empty = new NGram(1);
+			if (oldWord_one == null) {
+				nextWord = getDistributedWord(empty, empty, empty, sentenceLength);
+			} else if (oldWord_two == null) {
+				nextWord = getDistributedWord(biGrams.getWordChoices(oldWord_one), empty, empty, sentenceLength);
+			} else if (oldWord_three == null) {
+				nextWord = getDistributedWord(biGrams.getWordChoices(oldWord_one), 
+						triGrams.getWordChoices(triHash), empty, sentenceLength);
+			} else {
+				nextWord = getDistributedWord(biGrams.getWordChoices(oldWord_one), 
+						triGrams.getWordChoices(triHash), quadGrams.getWordChoices(quadHash), sentenceLength);
+			}
+			
+			//Pick random word from biGrams if no choices found
 			if (nextWord == null) {
-                ArrayList<String> wordChoices = n_grams.getKeys();
-                //Pick a random word from the list
-                int randInt = rng.nextInt(wordChoices.size()); //0 -> size -1
+                ArrayList<String> wordChoices = biGrams.getKeys();
+                int randInt = rng.nextInt(wordChoices.size());
                 nextWord = wordChoices.get(randInt);
 			}
 
@@ -61,7 +114,10 @@ public class TextGenerator {
 
             text.append(" ");
             text.append(nextWord);
-            firstWord = nextWord;
+            
+            //Update queue of old words
+            if (oldWord_three != null) wordQueue.removeLast();
+            wordQueue.addFirst(nextWord);
 		}
 		
 		return text.toString();

@@ -50,7 +50,7 @@ public class Main {
     //Main
     public static void main(String[] args) throws IOException, FileNotFoundException {
 		int words = 300;
-		ArrayList<NGrams> n_grams = new ArrayList<NGrams>();
+		ArrayList<NGrams> ngrams = new ArrayList<NGrams>();
         
 		//Check arg exists
 		if (args.length == 0) {
@@ -59,24 +59,21 @@ public class Main {
 		}
 		
 		//Check arg to determine if read from file or korpus
-		HashMap<String, NGram> oneGrams = null;
 		if (args[0].equals("file")) {
 			//Read map from file
-			oneGrams = CorpusParser.readNgramsFromFile("../ngrams/onegram.ser");
-			//printMapContents(oneGrams);
+			//ngrams = CorpusParser.readNgramsFromFile("../ngrams/onegram.ser");
 			
 			//Error check
-			if (oneGrams == null) {
-				System.out.println("Could not read ngrams from file");
-			}
+	//		if (ngrams == null) {
+			//	System.out.println("Could not read ngrams from file");
+			//}
 		} else if (args[0].equals("corpus")) {
 			//Read map from korpus
-			oneGrams = CorpusParser.readCorpus("../corpus/corpus.txt");
-			//printMapContents(oneGrams);
-			printToFile(oneGrams);
+			ngrams = CorpusParser.readCorpus("../corpus/corpus.txt");
+			//printToFile(oneGrams); Doesnt work atm
 			
 			//Error check
-			if (oneGrams == null) {
+			if (ngrams == null) {
 				System.out.println("Could not read ngrams from corpus");
 			}
 		} else {
@@ -85,8 +82,20 @@ public class Main {
 		}
 //		n_grams.add();
 		
+		//DEBUG
+		HashMap<String, NGram> triGrams = ngrams.get(1).map;
+		for (String s : triGrams.keySet()) {
+			Set<String> set = triGrams.get(s).occurrences.keySet();
+			for (String ss : set) {
+				System.out.println("Word was: " + ss);
+			}
+			System.out.println("******NEW KEY****");
+		}
+//		System.exit(0);
+		System.out.println("Done");
 		//Send n-grams to TextGenerator
-		TextGenerator textGen = new TextGenerator(new NGrams(oneGrams));
+		TextGenerator textGen = new TextGenerator(ngrams);
+        System.out.println("Generating");
 		
 		//Generate text
 		String text = textGen.generateText(words, "The");

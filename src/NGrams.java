@@ -15,8 +15,9 @@ public class NGrams {
     //Get getWordChoices
     public NGram getWordChoices(String oldWord) {
         NGram words = map.get(oldWord);
-        if (words != null) {
-            return words;
+        if (words == null) {
+        	//Return an empty NGram
+            return new NGram(2);
         }
         return words;
     }
