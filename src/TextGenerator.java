@@ -62,7 +62,7 @@ public class TextGenerator {
 		
 		//Loop until enough words
         int sentenceLength = 1;
-		for (int index = 0; index < words; index ++) { // Make sure to end with a period
+		for (int index = 0; index < words/* || !firstWord.endsWith(".")*/; index ++) { // Make sure to end with a period
 			//Fetch word choices
 //			String nextWord = n_grams.getWordChoices(firstWord).getNextWord(sentenceLength);
 
