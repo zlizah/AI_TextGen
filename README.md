@@ -10,3 +10,6 @@ java Main corpus
 or 
 
 java Main file
+
+Corpus taken from: https://www.whitehouse.gov/briefing-room/speeches-and-remarks
+Next article to add: September 27
