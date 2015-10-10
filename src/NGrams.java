@@ -3,9 +3,9 @@ import java.util.*;
 /**
  * Collection of n-grams
  */
-public class NGrams {
+class NGrams {
     //Fields
-    public final HashMap<String, NGram> map;
+    private final HashMap<String, NGram> map;
 
     //Constructor
     public NGrams(HashMap<String, NGram> map) {
@@ -17,7 +17,7 @@ public class NGrams {
         NGram words = map.get(oldWord);
         if (words == null) {
         	//Return an empty NGram
-            return new NGram(2);
+            return new NGram();
         }
         return words;
     }

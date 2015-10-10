@@ -2,7 +2,7 @@
 /**
  * Provides static methods for hashing the string used in the N-grams
  */
-public class StringHasher {
+class StringHasher {
     /**
      * Hashes the given lis of strings into one strings using hashtags (#)
      */

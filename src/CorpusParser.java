@@ -5,8 +5,7 @@ import java.io.*;
 /**
  * Reads corpus into hashmap
  */
-public class CorpusParser {
-    private final static int N = 1; // Size of n-grams
+class CorpusParser {
     private static ArrayList<String> startWords;
     public static HashMap<String, Integer> allWords; //Needed for interpolation
     public static int numberOfWords = 0;
@@ -51,27 +50,24 @@ public class CorpusParser {
 	}
 	
 	//Read the corpus file into n-grams
-    public static ArrayList<NGrams> readCorpus(String path) throws IOException {
+    public static ArrayList<NGrams> readCorpus() throws IOException {
 		//Grams
 		HashMap<String, NGram> bi_grams = new HashMap<>();
 		HashMap<String, NGram> tri_grams = new HashMap<>();
 		HashMap<String, NGram> quad_grams = new HashMap<>();
-		startWords = new ArrayList<String>();
-        allWords = new HashMap<String, Integer>();
+		startWords = new ArrayList<>();
+        allWords = new HashMap<>();
 		
 		//Reader
-        BufferedReader br = new BufferedReader(new FileReader(path));
+        BufferedReader br = new BufferedReader(new FileReader("corpus/corpus_speeches.txt"));
         
         //List of previous words, index 0 contains most recent, size <= 3
-        LinkedList<String> wordQueue = new LinkedList<String>();
-        
-        //Treat header separately
-        String header = br.readLine();
-        
+        LinkedList<String> wordQueue = new LinkedList<>();
+
         //Go through the corpus
         String line = br.readLine();
         while (line != null) {
-            //Remove unnecesary whitespace
+            //Remove unnecessary whitespace
             line = line.trim().replaceAll("\\s+", " ");
             
             
@@ -97,10 +93,10 @@ public class CorpusParser {
                     continue;
                 }
                 
-                // (Apllause and laughter)
+                // (Applause and laughter)
                 if(word.startsWith("(") && word.endsWith(")")) continue;
                 
-                //Count number of occurances in the entire corpus (Used for Interpolation)
+                //Count number of occurrences in the entire corpus (Used for Interpolation)
                 if(allWords.containsKey(word)) {
                     allWords.put(word, 1 + (allWords.get(word)));
                 } else {
@@ -115,14 +111,14 @@ public class CorpusParser {
                     //Add this word as an observation in the bi-gram list
                     NGram tuple = bi_grams.get(oldWord_one);
                     if (tuple == null) {
-                        tuple = new NGram(2);
+                        tuple = new NGram();
                         bi_grams.put(oldWord_one, tuple);
                     }
                     tuple.addObservation(word);
 
                 }
                                     
-                //TRI-GRAMS //TODO Fixa exceptions from empty linkedlist
+                //TRI-GRAMS //TODO Fix exceptions from empty linked list
                 String oldWord_two = null;
                 if (wordQueue.size() >= 2) oldWord_two = wordQueue.get(1);
                 if (oldWord_two != null) {
@@ -135,7 +131,7 @@ public class CorpusParser {
                     //Add this word as an observation in the tri-gram list
                     NGram triple = tri_grams.get(hash);
                     if (triple == null) {
-                        triple = new NGram(3);
+                        triple = new NGram();
                         tri_grams.put(hash, triple);
                     }
                     triple.addObservation(word);
@@ -155,7 +151,7 @@ public class CorpusParser {
                     //Add this word as an observation in the quad-gram list
                     NGram quadruple = quad_grams.get(hash);
                     if (quadruple == null) {
-                        quadruple = new NGram(4);
+                        quadruple = new NGram();
                         quad_grams.put(hash, quadruple);
                     }
                     quadruple.addObservation(word);
@@ -180,7 +176,7 @@ public class CorpusParser {
 		NGrams tri_gram = new NGrams(tri_grams);
 		NGrams quad_gram = new NGrams(quad_grams);
 		
-		ArrayList<NGrams> ngrams = new ArrayList<NGrams>();
+		ArrayList<NGrams> ngrams = new ArrayList<>();
 		ngrams.add(bi_gram);
 		ngrams.add(tri_gram);
 		ngrams.add(quad_gram);
