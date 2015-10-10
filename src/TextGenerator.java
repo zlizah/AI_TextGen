@@ -1,32 +1,31 @@
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.Random;
+import java.util.*;
 
 /**
  * Text generator
  */
 class TextGenerator {
     //Fields
+    private final NGrams uniGrams;
     private final NGrams biGrams;
     private final NGrams triGrams;
     private final NGrams quadGrams;
 
     //Constructor
     public TextGenerator(ArrayList<NGrams> nGrams) {
-        biGrams = nGrams.get(0);
-        triGrams = nGrams.get(1);
-        quadGrams = nGrams.get(2);
+        uniGrams = nGrams.get(0);
+        biGrams = nGrams.get(1);
+        triGrams = nGrams.get(2);
+        quadGrams = nGrams.get(3);
 
     }
 
     //Generator
     public String generateText(int words) {
         //Generate a random first word
-        ArrayList<String> startWords = CorpusParser.getStartWords();
+        HashSet<String> startWords = CorpusParser.getStartWords();
         Random rng = new Random();
         int randFirstInt = rng.nextInt(startWords.size()); //0 -> size -1
-        String startWord = startWords.get(randFirstInt);
+        String startWord = new ArrayList<>(startWords).get(randFirstInt);
         return generateText(words, startWord);
     }
 
@@ -34,11 +33,10 @@ class TextGenerator {
     /**
      * Interpolates given ngrams given probabilities of given words.
      */
-    private String getInterpolatedWord(NGram biWord, NGram triWord, NGram quadWord, int sentenceLength) {
+    private String getInterpolatedWord(NGram uniWord, NGram biWord, NGram triWord, NGram quadWord, int sentenceLength) {
+        HashMap<String, Double> probabilities = NGrams.quadPolarWord(uniWord, biWord, triWord, quadWord, sentenceLength);
 
-        HashMap<String, Double> probabilities = NGrams.quadPolarWord(biWord, triWord, quadWord, sentenceLength);
-
-        String chosenWord = chooseWord(probabilities);
+        String chosenWord = chooseWord(probabilities, uniWord);
 
 
         if(sentenceLength == 0) {
@@ -56,9 +54,9 @@ class TextGenerator {
     /**
      * Choose a random word from a set of words with a certain probabilistic value.
      */
-    private String chooseWord(HashMap<String, Double> probabilities) {
+    private String chooseWord(HashMap<String, Double> probabilities, NGram uniGram) {
         double interpolSum = 0.0;
-        ArrayList<String> possibleWords = new ArrayList<>(CorpusParser.allWords.keySet());
+        ArrayList<String> possibleWords = new ArrayList<>(uniGram.occurrences.keySet());
         for (String word : possibleWords) {
             interpolSum += probabilities.get(word);
         }
@@ -103,7 +101,8 @@ class TextGenerator {
             String quadHash = String.format("%s %s %s", oldWord1, oldWord2, oldWord3);
 
             //Generate next word, depending on the amount of available grams
-            String nextWord = getInterpolatedWord(biGrams.getWordChoices(oldWord1),
+            String nextWord = getInterpolatedWord(uniGrams.getWordChoices("UNI"),
+                    biGrams.getWordChoices(oldWord1),
                     triGrams.getWordChoices(triHash),
                     quadGrams.getWordChoices(quadHash),
                     sentenceLength);
@@ -115,7 +114,6 @@ class TextGenerator {
             } else {
                 ++sentenceLength;
             }
-
             text.append(" ");
             text.append(nextWord);
 

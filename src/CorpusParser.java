@@ -5,8 +5,7 @@ import java.io.*;
  * Reads corpus into hashmap
  */
 class CorpusParser {
-    private static ArrayList<String> startWords;
-    public static HashMap<String, Integer> allWords; //Needed for interpolation
+    private static HashSet<String> startWords;
     public static int numberOfWords = 0;
 	
 		
@@ -44,18 +43,18 @@ class CorpusParser {
 		return n_grams;
 	}
 	
-	public static ArrayList<String> getStartWords() {
+	public static HashSet<String> getStartWords() {
 	    return startWords;
 	}
 	
 	//Read the corpus file into n-grams
     public static ArrayList<NGrams> readCorpus() throws IOException {
 		//Grams
+        HashMap<String, NGram> uni_grams = new HashMap<>();
 		HashMap<String, NGram> bi_grams = new HashMap<>();
 		HashMap<String, NGram> tri_grams = new HashMap<>();
 		HashMap<String, NGram> quad_grams = new HashMap<>();
-		startWords = new ArrayList<>();
-        allWords = new HashMap<>();
+		startWords = new HashSet<>();
 		
 		//Reader
         BufferedReader br;
@@ -99,22 +98,20 @@ class CorpusParser {
                 // (Applause and laughter)
                 if(word.startsWith("(") && word.endsWith(")")) continue;
                 
-                //Count number of occurrences in the entire corpus (Used for Interpolation)
-                if(allWords.containsKey(word)) {
-                    allWords.put(word, 1 + (allWords.get(word)));
-                } else {
-                    allWords.put(word, 1);
-                }
-                numberOfWords += 1;
+//                //Count number of occurrences in the entire corpus (Used for Interpolation)
+//                if(allWords.containsKey(word)) {
+//                    allWords.put(word, 1 + (allWords.get(word)));
+//                } else {
+//                    allWords.put(word, 1);
+//                }
+//                numberOfWords += 1;
+                getDefaultGram(uni_grams, "UNI").addObservation(word);
+
 
                 //BI-GRAMS
                 if (wordQueue.size() >= 1) {
                     //Add this word as an observation in the bi-gram list
-                    NGram tuple = bi_grams.get(wordQueue.get(0));
-                    if (tuple == null) {
-                        tuple = new NGram();
-                        bi_grams.put(wordQueue.get(0), tuple);
-                    }
+                    NGram tuple = getDefaultGram(bi_grams, wordQueue.get(0));
                     tuple.addObservation(word);
 
                 }
@@ -125,11 +122,7 @@ class CorpusParser {
                     String hash = String.format("%s %s", wordQueue.get(0), wordQueue.get(1));
                     
                     //Add this word as an observation in the tri-gram list
-                    NGram triple = tri_grams.get(hash);
-                    if (triple == null) {
-                        triple = new NGram();
-                        tri_grams.put(hash, triple);
-                    }
+                    NGram triple = getDefaultGram(tri_grams, hash);
                     triple.addObservation(word);
                 }
                 
@@ -139,17 +132,14 @@ class CorpusParser {
                     String hash = String.format("%s %s %s", wordQueue.get(0), wordQueue.get(1), wordQueue.get(2));
                     
                     //Add this word as an observation in the quad-gram list
-                    NGram quadruple = quad_grams.get(hash);
-                    if (quadruple == null) {
-                        quadruple = new NGram();
-                        quad_grams.put(hash, quadruple);
-                    }
+                    NGram quadruple = getDefaultGram(quad_grams, hash);
                     quadruple.addObservation(word);
                 }
 
                 //Append to list of start words (possibly)
                 if (word.length() > 1 && !word.equals("And") 
-                        && word.substring(0, 1).matches("[A-Z]")) {
+                        && word.substring(0, 1).matches("[A-Z]")
+                        && !NGrams.isTerminal(word)) {
                     startWords.add(word);
                 }
 
@@ -162,16 +152,27 @@ class CorpusParser {
             line = br.readLine();
         }
 		br.close();
+        NGrams uni_gram = new NGrams(uni_grams);
 		NGrams bi_gram = new NGrams(bi_grams);
 		NGrams tri_gram = new NGrams(tri_grams);
 		NGrams quad_gram = new NGrams(quad_grams);
 		
 		ArrayList<NGrams> ngrams = new ArrayList<>();
+        ngrams.add(uni_gram);
 		ngrams.add(bi_gram);
 		ngrams.add(tri_gram);
 		ngrams.add(quad_gram);
 
 
 		return ngrams;
+    }
+
+    private static NGram getDefaultGram(HashMap<String, NGram> bi_grams, String key) {
+        NGram tuple = bi_grams.get(key);
+        if (tuple == null) {
+            tuple = new NGram();
+            bi_grams.put(key, tuple);
+        }
+        return tuple;
     }
 }

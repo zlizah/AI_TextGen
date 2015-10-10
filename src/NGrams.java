@@ -28,13 +28,14 @@ class NGrams {
      *	Compute how much the given word appear in the corpus in comparison to all other words.
      */
     private static double getUniOcc(String w) {
-        return (double) CorpusParser.allWords.get(w) / (double) CorpusParser.numberOfWords;
+//        return (double) CorpusParser.allWords.get(w) / (double) CorpusParser.numberOfWords;
+        return 0;
     }
 
 
     public static double sentenceEvaluation(String word, int value, int currentSentenceLength) {
         // We prefer to start with start words
-        if (currentSentenceLength == 0 ^ CorpusParser.getStartWords().contains(word)) {
+        if (currentSentenceLength == 0 != CorpusParser.getStartWords().contains(word)) {
             return ((double)value)/2;
         }
 
@@ -51,15 +52,15 @@ class NGrams {
     /**
      * Interpolates quadgrams into a hashmap containing probabilities
      */
-    public static HashMap<String, Double> quadPolarWord(NGram biWord, NGram triWord, NGram quadWord, int sentenceLength) {
+    public static HashMap<String, Double> quadPolarWord(NGram uniWord, NGram biWord, NGram triWord, NGram quadWord, int sentenceLength) {
         HashMap<String, Double> probabilities = new HashMap<>();
-        ArrayList<String> possibleWords = new ArrayList<>(CorpusParser.allWords.keySet());
+        ArrayList<String> possibleWords = new ArrayList<>(uniWord.occurrences.keySet());
 
         // Make sure to keep bi-gram probability above 0 as a fallback
-        double[] lambdas = {0.03, 0.12, 0.4, 0.45};
+        double[] lambdas = {0.03, 0.17, 0.6, 0.2};
 
         for (String word : possibleWords) {
-            double uniOcc = getUniOcc(word); //P(w_n)
+            double uniOcc = uniWord.getNOcc(word, sentenceLength); //P(w_n)
             double biOcc = biWord.getNOcc(word, sentenceLength); //P(w_n | w_n-1)
             double triOcc = triWord.getNOcc(word, sentenceLength); //P(w_n | w_n-1 w_n-2)
             double quadOcc = quadWord.getNOcc(word, sentenceLength); //P(w_n | w_n-1 w_n-2 w_n-3)
