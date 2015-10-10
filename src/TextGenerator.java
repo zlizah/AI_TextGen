@@ -32,11 +32,11 @@ class TextGenerator {
 
 
     /**
-     * Interpolates given ngrams given probabilities of given words. Can create "new" ngrams.
+     * Interpolates given ngrams given probabilities of given words.
      */
     private String getInterpolatedWord(NGram biWord, NGram triWord, NGram quadWord, int sentenceLength) {
 
-        HashMap<String, Double> probabilities = NGrams.quadPolarWord(biWord, triWord, quadWord);
+        HashMap<String, Double> probabilities = NGrams.quadPolarWord(biWord, triWord, quadWord, sentenceLength);
 
         String chosenWord = chooseWord(probabilities);
 
@@ -110,6 +110,7 @@ class TextGenerator {
 
             // End sentence
             if (nextWord.endsWith(".")) {
+                System.err.println("Sentence length: " + sentenceLength);
                 sentenceLength = 0;
             } else {
                 ++sentenceLength;

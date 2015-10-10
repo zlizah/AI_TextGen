@@ -1,11 +1,8 @@
 import java.util.HashMap;
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Random;
 
 public class NGram implements Serializable {
 
-    private final static int OPTIMAL_SENTENCE_LENGTH = 10;
 
     public final HashMap<String, Integer> occurrences;
     private int sumOccurrences;
@@ -33,41 +30,15 @@ public class NGram implements Serializable {
     /**
      * Compute the probability that the given word can be followed by the given ngram.
      */
-    public double getNOcc(String word) {
+    public double getNOcc(String word, int sentenceLength) {
         double ret;
 
         if(occurrences.containsKey(word)) {
-            ret = (double) occurrences.get(word) / (double) sumOccurrences;
+            ret = NGrams.sentenceEvaluation(word, occurrences.get(word), sentenceLength) / (double) sumOccurrences;
         } else {
             ret = 0;
         }
         return ret;
     }
 
-    private int periodEvaluation(int value, int currentSentenceLength) {
-        return (int) (Math.abs(currentSentenceLength - OPTIMAL_SENTENCE_LENGTH) * 0.2 * value);
-    }
-
-    private String getRandomWord(ArrayList<String> list) {
-        Random rng = new Random();
-
-        int randInt = rng.nextInt(list.size()); //0 -> size -1
-        return list.get(randInt);
-
-    }
-    public String getDistributedWord() {
-        Random rng = new Random();
-        int index = rng.nextInt(sumOccurrences);
-        for (String word : occurrences.keySet()) {
-            index -= occurrences.get(word);
-            if (index <= 0) {
-                return word;
-            }
-        }
-        return null;
-    }
-    
-    public int getOccurrences() {
-    	return sumOccurrences;
-    }
 }

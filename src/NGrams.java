@@ -7,6 +7,8 @@ class NGrams {
     //Fields
     private final HashMap<String, NGram> map;
 
+    private final static int OPTIMAL_SENTENCE_LENGTH = 10;
+
     //Constructor
     public NGrams(HashMap<String, NGram> map) {
         this.map = map;
@@ -26,14 +28,30 @@ class NGrams {
      *	Compute how much the given word appear in the corpus in comparison to all other words.
      */
     private static double getUniOcc(String w) {
-        int occs = CorpusParser.allWords.get(w); //Assumed to work correctly for now
-        return (double) occs / (double) CorpusParser.numberOfWords;
+        return (double) CorpusParser.allWords.get(w) / (double) CorpusParser.numberOfWords;
+    }
+
+
+    public static double sentenceEvaluation(String word, int value, int currentSentenceLength) {
+        // We prefer to start with start words
+        if (currentSentenceLength == 0 ^ CorpusParser.getStartWords().contains(word)) {
+            return ((double)value)/2;
+        }
+
+        if (isTerminal(word)) {
+            return value + (currentSentenceLength - OPTIMAL_SENTENCE_LENGTH) * 0.5 * value;
+        }
+        return value;
+    }
+
+    public static boolean isTerminal(String word) {
+        return (word.endsWith(".") || word.endsWith("?") || word.endsWith("!"));
     }
 
     /**
      * Interpolates quadgrams into a hashmap containing probabilities
      */
-    public static HashMap<String, Double> quadPolarWord(NGram biWord, NGram triWord, NGram quadWord) {
+    public static HashMap<String, Double> quadPolarWord(NGram biWord, NGram triWord, NGram quadWord, int sentenceLength) {
         HashMap<String, Double> probabilities = new HashMap<>();
         ArrayList<String> possibleWords = new ArrayList<>(CorpusParser.allWords.keySet());
 
@@ -42,9 +60,9 @@ class NGrams {
 
         for (String word : possibleWords) {
             double uniOcc = getUniOcc(word); //P(w_n)
-            double biOcc = biWord.getNOcc(word); //P(w_n | w_n-1)
-            double triOcc = triWord.getNOcc(word); //P(w_n | w_n-1 w_n-2)
-            double quadOcc = quadWord.getNOcc(word); //P(w_n | w_n-1 w_n-2 w_n-3)
+            double biOcc = biWord.getNOcc(word, sentenceLength); //P(w_n | w_n-1)
+            double triOcc = triWord.getNOcc(word, sentenceLength); //P(w_n | w_n-1 w_n-2)
+            double quadOcc = quadWord.getNOcc(word, sentenceLength); //P(w_n | w_n-1 w_n-2 w_n-3)
 
             double interpolatedProbability = lambdas[3] * quadOcc + lambdas[2] * triOcc + lambdas[1] * biOcc + lambdas[0] * uniOcc; //Simple linear interpolation
 
@@ -52,10 +70,5 @@ class NGrams {
         }
 
         return probabilities;
-    }
-
-    //Fetch the keys
-    public ArrayList<String> getKeys() {
-        return new ArrayList<>(map.keySet());
     }
 }
