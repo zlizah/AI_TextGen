@@ -30,6 +30,20 @@ public class NGram implements Serializable {
         sumOccurrences += 1;
     }
 
+    /**
+     * Compute the probability that the given word can be followed by the given ngram.
+     */
+    public double getNOcc(String word) {
+        double ret;
+
+        if(occurrences.containsKey(word)) {
+            ret = (double) occurrences.get(word) / (double) sumOccurrences;
+        } else {
+            ret = 0;
+        }
+        return ret;
+    }
+
     private int periodEvaluation(int value, int currentSentenceLength) {
         return (int) (Math.abs(currentSentenceLength - OPTIMAL_SENTENCE_LENGTH) * 0.2 * value);
     }

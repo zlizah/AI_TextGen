@@ -1,6 +1,3 @@
-
-import com.sun.deploy.util.StringUtils;
-
 import java.util.*;
 import java.io.*;
 
@@ -125,10 +122,7 @@ class CorpusParser {
                 if (wordQueue.size() >= 2) oldWord_two = wordQueue.get(1);
                 if (oldWord_two != null) {
                     //Hash the multiple old words into one single string
-                    String[] tri_words = new String[2];
-                    tri_words[0] = oldWord_one;
-                    tri_words[1] = oldWord_two;
-                    String hash = StringUtils.join(Arrays.asList(tri_words), " ");
+                    String hash = String.format("%s %s", oldWord_one, oldWord_two);
                     
                     //Add this word as an observation in the tri-gram list
                     NGram triple = tri_grams.get(hash);
@@ -144,11 +138,7 @@ class CorpusParser {
                 if (wordQueue.size() >= 3) oldWord_three = wordQueue.get(2);
                 if (oldWord_three != null) {
                     //Hash the multiple old words into one single string
-                    String[] quad_words = new String[3];
-                    quad_words[0] = oldWord_one;
-                    quad_words[1] = oldWord_two;
-                    quad_words[2] = oldWord_three;
-                    String hash = StringUtils.join(Arrays.asList(quad_words), " ");
+                    String hash = String.format("%s %s %s", oldWord_one, oldWord_two, oldWord_three);
                     
                     //Add this word as an observation in the quad-gram list
                     NGram quadruple = quad_grams.get(hash);

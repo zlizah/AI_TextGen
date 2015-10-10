@@ -1,7 +1,7 @@
-import com.sun.deploy.util.StringUtils;
-import javafx.util.Pair;
-
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.Random;
 
 /**
  * Text generator
@@ -66,9 +66,9 @@ class TextGenerator {
 
         for (String word : possibleWords) {
             double uniOcc = getUniOcc(word); //P(w_n)
-            double biOcc = getNOcc(biWord, word); //P(w_n | w_n-1)
-            double triOcc = getNOcc(triWord, word); //P(w_n | w_n-1 w_n-2)
-            double quadOcc = getNOcc(quadWord, word); //P(w_n | w_n-1 w_n-2 w_n-3)
+            double biOcc = biWord.getNOcc(word); //P(w_n | w_n-1)
+            double triOcc = triWord.getNOcc(word); //P(w_n | w_n-1 w_n-2)
+            double quadOcc = quadWord.getNOcc(word); //P(w_n | w_n-1 w_n-2 w_n-3)
 
             double interpolatedProbability = lambdas[3] * quadOcc + lambdas[2] * triOcc + lambdas[1] * biOcc + lambdas[0] * uniOcc; //Simple linear interpolation
 
@@ -84,20 +84,6 @@ class TextGenerator {
     private double getUniOcc(String w) {
         int occs = CorpusParser.allWords.get(w); //Assumed to work correctly for now
         return (double) occs / (double) CorpusParser.numberOfWords;
-    }
-
-    /**
-     * Compute the probability that the given word can be followed by the given ngram.
-     */
-    private double getNOcc(NGram ngram, String word) {
-        double ret;
-
-        if(ngram.occurrences.containsKey(word)) {
-            ret = (double) ngram.occurrences.get(word) / (double) ngram.getOccurrences();
-        } else {
-            ret = 0;
-        }
-        return ret;
     }
 
     /**
