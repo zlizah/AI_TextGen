@@ -1,4 +1,6 @@
 
+import com.sun.deploy.util.StringUtils;
+
 import java.util.*;
 import java.io.*;
 
@@ -126,7 +128,7 @@ class CorpusParser {
                     String[] tri_words = new String[2];
                     tri_words[0] = oldWord_one;
                     tri_words[1] = oldWord_two;
-                    String hash = StringHasher.hashWords(tri_words);
+                    String hash = StringUtils.join(Arrays.asList(tri_words), " ");
                     
                     //Add this word as an observation in the tri-gram list
                     NGram triple = tri_grams.get(hash);
@@ -146,7 +148,7 @@ class CorpusParser {
                     quad_words[0] = oldWord_one;
                     quad_words[1] = oldWord_two;
                     quad_words[2] = oldWord_three;
-                    String hash = StringHasher.hashWords(quad_words);
+                    String hash = StringUtils.join(Arrays.asList(quad_words), " ");
                     
                     //Add this word as an observation in the quad-gram list
                     NGram quadruple = quad_grams.get(hash);
