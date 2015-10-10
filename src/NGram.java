@@ -12,6 +12,7 @@ public class NGram implements Serializable {
     public final HashMap<String, Integer> occurrences;
     public int sumOccurrences;
 
+
     public NGram(int n) {
         this.n = n;
         this.occurrences = new HashMap<>();

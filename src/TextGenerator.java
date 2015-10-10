@@ -28,8 +28,109 @@ public class TextGenerator {
         return generateText(words, startWord);
     }
 	
+
+
+    private String getInterpolatedWord(NGram biWord, NGram triWord) {
+    	Random rng = new Random(65);
+		
+		int temp = 100;
+		if (triWord.isEmpty()) temp = 10;
+		if (biWord.isEmpty()) return null;
+		int index = rng.nextInt(temp);
+
+		if(index < 10) {
+			return biPolarWord(biWord);
+		} 
+		return triPolarWord(triWord, biWord);
+	}
+
+	private String biPolarWord(NGram biWord) {
+		HashMap<String, Double> probabilities = new HashMap<String, Double>();
+		ArrayList<String> possibleWords = new ArrayList<String>(CorpusParser.allWords.keySet());
+
+		double[] lambdas = new double[2];
+		Random rng = new Random();
+		lambdas[0] = rng.nextDouble();
+		lambdas[1] = 1 - lambdas[0];
+
+		for(int i = 0; i < possibleWords.size(); i++) {
+			String word = possibleWords.get(i);
+
+			double uniOcc = getUniOcc(word); //P(w_n)
+
+			double biOcc = getNOcc(biWord, word);
+
+			double interpolatedProbability = lambdas[1] * biOcc + lambdas[0] * uniOcc;
+			probabilities.put(word, interpolatedProbability);
+		}
+
+		return chooseWord(probabilities);
+	}
+
+	private String triPolarWord(NGram triWord, NGram biWord) {
+		HashMap<String, Double> probabilities = new HashMap<String, Double>();
+		ArrayList<String> possibleWords = new ArrayList<String>(CorpusParser.allWords.keySet());
+
+		double[] lambdas = new double[3];
+		Random rng = new Random();
+		lambdas[0] = rng.nextDouble();
+		lambdas[1] = (1-lambdas[0]) / (rng.nextInt(10) + 1);
+		lambdas[2] = 1 - (lambdas[0] + lambdas[1]);
+
+		for(int i = 0; i < possibleWords.size(); i++) {
+			String word = possibleWords.get(i);
+
+			double uniOcc = getUniOcc(word); //P(w_n)
+
+			double biOcc = getNOcc(biWord, word);
+
+			double triOcc = getNOcc(triWord, word);
+
+			double interpolatedProbability = lambdas[2] * triOcc + lambdas[1] * biOcc + lambdas[0] * uniOcc;
+
+			probabilities.put(word, interpolatedProbability);
+		}
+
+		return chooseWord(probabilities);
+	}
+
+
+    private double getUniOcc(String w) {
+    	int occs = CorpusParser.allWords.get(w); //Assumed to work correctly for now
+    	return (double) occs/CorpusParser.numberOfWords;
+    }
+
+
+    private double getNOcc(NGram ngram, String word) {
+    	double ret;
+
+		if(ngram.occurrences.containsKey(word)) {
+			ret = ngram.occurrences.get(word) / ngram.getOccurrences(); 
+		} else {
+			ret = 0;
+		}
+		return ret;
+    }
+
+    private String chooseWord(HashMap<String, Double> probabilities) {
+    	Random rng = new Random();
+    	double index = rng.nextDouble();
+    	ArrayList<String> possibleWords = new ArrayList<String>(CorpusParser.allWords.keySet());
+
+    	for(int i = 0; i < possibleWords.size(); i++) {
+    		String word = possibleWords.get(i);
+    		index -= probabilities.get(word);
+    		if(index <= 0) {
+    			return word;
+    		}
+    	}
+    	return null; //Error
+    }
+
 	private String getDistributedWord(NGram biWord, NGram triWord, NGram quadWord, int sentenceLength) {
 		//TODO Empty lists?
+		//return getInterpolatedWord(biWord, triWord); //Use interpolation instead
+		
 		Random rng = new Random(65);
 		
 		int temp = 100;
@@ -45,7 +146,7 @@ public class TextGenerator {
 			return triWord.getNextWord(sentenceLength);
 		} else {
 			return quadWord.getNextWord(sentenceLength);
-		}
+		} 
 	}
 
     /**

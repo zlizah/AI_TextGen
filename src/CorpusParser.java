@@ -8,6 +8,8 @@ import java.io.*;
 public class CorpusParser {
     private final static int N = 1; // Size of n-grams
     private static ArrayList<String> startWords;
+    public static HashMap<String, Integer> allWords; //Needed for interpolation
+    public static int numberOfWords = 0;
 	
 		
 	//Read onegram hashmap from file
@@ -55,6 +57,7 @@ public class CorpusParser {
 		HashMap<String, NGram> tri_grams = new HashMap<>();
 		HashMap<String, NGram> quad_grams = new HashMap<>();
 		startWords = new ArrayList<String>();
+        allWords = new HashMap<String, Integer>();
 		
 		//Reader
         BufferedReader br = new BufferedReader(new FileReader(path));
@@ -93,6 +96,14 @@ public class CorpusParser {
                 // (Apllause and laughter)
                 if(word.startsWith("(") && word.endsWith(")")) continue;
                 
+                //Count number of occurances in the entire corpus (Used for Interpolation)
+                if(allWords.containsKey(word)) {
+                    allWords.put(word, 1 + (allWords.get(word)));
+                } else {
+                    allWords.put(word, 1);
+                }
+                numberOfWords += 1;
+
                 //BI-GRAMS
             	String oldWord_one = null;
             	if (wordQueue.size() >= 1) oldWord_one = wordQueue.get(0);
