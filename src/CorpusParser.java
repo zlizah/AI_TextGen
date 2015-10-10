@@ -10,7 +10,7 @@ class CorpusParser {
     public static int numberOfWords = 0;
 	
 		
-	//Read onegram hashmap from file
+	//Read unigram hashmap from file
 	@SuppressWarnings("unchecked")
 	public static HashMap<String, NGram> readNgramsFromFile(String path) {
 		//Read the mapobject from the file
@@ -92,7 +92,7 @@ class CorpusParser {
                     continue;
                 }
 
-                if(word.equals("") ||word.equals(" ")) {
+                if(word.equals("") || word.equals(" ")) {
                     continue;
                 }
                 
@@ -108,25 +108,21 @@ class CorpusParser {
                 numberOfWords += 1;
 
                 //BI-GRAMS
-            	String oldWord_one = null;
-            	if (wordQueue.size() >= 1) oldWord_one = wordQueue.get(0);
-                if (oldWord_one != null) {
+                if (wordQueue.size() >= 1) {
                     //Add this word as an observation in the bi-gram list
-                    NGram tuple = bi_grams.get(oldWord_one);
+                    NGram tuple = bi_grams.get(wordQueue.get(0));
                     if (tuple == null) {
                         tuple = new NGram();
-                        bi_grams.put(oldWord_one, tuple);
+                        bi_grams.put(wordQueue.get(0), tuple);
                     }
                     tuple.addObservation(word);
 
                 }
                                     
                 //TRI-GRAMS //TODO Fix exceptions from empty linked list
-                String oldWord_two = null;
-                if (wordQueue.size() >= 2) oldWord_two = wordQueue.get(1);
-                if (oldWord_two != null) {
+                if (wordQueue.size() >= 2) {
                     //Hash the multiple old words into one single string
-                    String hash = String.format("%s %s", oldWord_one, oldWord_two);
+                    String hash = String.format("%s %s", wordQueue.get(0), wordQueue.get(1));
                     
                     //Add this word as an observation in the tri-gram list
                     NGram triple = tri_grams.get(hash);
@@ -138,11 +134,9 @@ class CorpusParser {
                 }
                 
                 //QUAD-GRAMS
-                String oldWord_three = null;
-                if (wordQueue.size() >= 3) oldWord_three = wordQueue.get(2);
-                if (oldWord_three != null) {
+                if (wordQueue.size() >= 3) {
                     //Hash the multiple old words into one single string
-                    String hash = String.format("%s %s %s", oldWord_one, oldWord_two, oldWord_three);
+                    String hash = String.format("%s %s %s", wordQueue.get(0), wordQueue.get(1), wordQueue.get(2));
                     
                     //Add this word as an observation in the quad-gram list
                     NGram quadruple = quad_grams.get(hash);
@@ -160,7 +154,7 @@ class CorpusParser {
                 }
 
                 //Update old word
-                if (oldWord_three != null) wordQueue.removeLast();
+                if (wordQueue.size() >= 3) wordQueue.removeLast();
                 wordQueue.addFirst(word);
             }
             

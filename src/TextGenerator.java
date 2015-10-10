@@ -36,7 +36,7 @@ class TextGenerator {
      */
     private String getInterpolatedWord(NGram biWord, NGram triWord, NGram quadWord, int sentenceLength) {
 
-        HashMap<String, Double> probabilities = quadPolarWord(biWord, triWord, quadWord);
+        HashMap<String, Double> probabilities = NGrams.quadPolarWord(biWord, triWord, quadWord);
 
         String chosenWord = chooseWord(probabilities);
 
@@ -51,39 +51,6 @@ class TextGenerator {
         }
 
         return chosenWord;
-    }
-
-
-    /**
-     * Interpolates quadgrams into a hashmap containing probabilities
-     */
-    private HashMap<String, Double> quadPolarWord(NGram biWord, NGram triWord, NGram quadWord) {
-        HashMap<String, Double> probabilities = new HashMap<>();
-        ArrayList<String> possibleWords = new ArrayList<>(CorpusParser.allWords.keySet());
-
-        // Make sure to keep bi-gram probability above 0 as a fallback
-        double[] lambdas = {0.03, 0.12, 0.4, 0.45};
-
-        for (String word : possibleWords) {
-            double uniOcc = getUniOcc(word); //P(w_n)
-            double biOcc = biWord.getNOcc(word); //P(w_n | w_n-1)
-            double triOcc = triWord.getNOcc(word); //P(w_n | w_n-1 w_n-2)
-            double quadOcc = quadWord.getNOcc(word); //P(w_n | w_n-1 w_n-2 w_n-3)
-
-            double interpolatedProbability = lambdas[3] * quadOcc + lambdas[2] * triOcc + lambdas[1] * biOcc + lambdas[0] * uniOcc; //Simple linear interpolation
-
-            probabilities.put(word, interpolatedProbability);
-        }
-
-        return probabilities;
-    }
-
-    /**
-     *	Compute how much the given word appear in the corpus in comparison to all other words.
-     */
-    private double getUniOcc(String w) {
-        int occs = CorpusParser.allWords.get(w); //Assumed to work correctly for now
-        return (double) occs / (double) CorpusParser.numberOfWords;
     }
 
     /**
@@ -123,21 +90,20 @@ class TextGenerator {
         text.append(firstWord);
         LinkedList<String> wordQueue = new LinkedList<>();
         wordQueue.addFirst(firstWord);
-        Random rng = new Random();
 
         //Loop until enough words, make sure to end text with a period (.)
         int sentenceLength = 1;
         for (int index = 0; index < words || !wordQueue.getFirst().contains("."); ++index) {
             //Fetch old words
-            String oldWord_one = wordQueue.getFirst();
-            String oldWord_two = wordQueue.size() >= 2 ? wordQueue.get(1) : "";
-            String oldWord_three = wordQueue.size() >= 3 ? wordQueue.get(2) : "";
+            String oldWord1 = wordQueue.getFirst();
+            String oldWord2 = wordQueue.size() >= 2 ? wordQueue.get(1) : "";
+            String oldWord3 = wordQueue.size() >= 3 ? wordQueue.get(2) : "";
 
-            String triHash = String.format("%s %s", oldWord_one, oldWord_two);
-            String quadHash = String.format("%s %s %s", oldWord_one, oldWord_two, oldWord_three);
+            String triHash = String.format("%s %s", oldWord1, oldWord2);
+            String quadHash = String.format("%s %s %s", oldWord1, oldWord2, oldWord3);
 
             //Generate next word, depending on the amount of available grams
-            String nextWord = getInterpolatedWord(biGrams.getWordChoices(oldWord_one),
+            String nextWord = getInterpolatedWord(biGrams.getWordChoices(oldWord1),
                     triGrams.getWordChoices(triHash),
                     quadGrams.getWordChoices(quadHash),
                     sentenceLength);
@@ -153,7 +119,7 @@ class TextGenerator {
             text.append(nextWord);
 
             //Update queue of old words
-            if (oldWord_three != null) wordQueue.removeLast();
+            if (oldWord3 != null) wordQueue.removeLast();
             wordQueue.addFirst(nextWord);
         }
 
