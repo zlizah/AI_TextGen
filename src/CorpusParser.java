@@ -92,6 +92,10 @@ public class CorpusParser {
                         && !word.equals("A")) {
                     continue;
                 }
+
+                if(word.equals("") ||word.equals(" ")) {
+                    continue;
+                }
                 
                 // (Apllause and laughter)
                 if(word.startsWith("(") && word.endsWith(")")) continue;
