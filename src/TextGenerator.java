@@ -55,7 +55,7 @@ class TextGenerator {
 
 
     /**
-     * Intepolates quadgrams into a hashmap containing probabilities
+     * Interpolates quadgrams into a hashmap containing probabilities
      */
     private HashMap<String, Double> quadPolarWord(NGram biWord, NGram triWord, NGram quadWord) {
         HashMap<String, Double> probabilities = new HashMap<>();

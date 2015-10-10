@@ -58,8 +58,12 @@ class CorpusParser {
         allWords = new HashMap<>();
 		
 		//Reader
-        BufferedReader br = new BufferedReader(new FileReader("corpus/corpus_speeches.txt"));
-        
+        BufferedReader br;
+        try {
+            br = new BufferedReader(new FileReader("../corpus/corpus_speeches.txt"));
+        } catch (FileNotFoundException e) {
+            br = new BufferedReader(new FileReader("corpus/corpus_speeches.txt"));
+        }
         //List of previous words, index 0 contains most recent, size <= 3
         LinkedList<String> wordQueue = new LinkedList<>();
 
