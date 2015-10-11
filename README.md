@@ -17,4 +17,6 @@ or
 java Main file
 
 Corpus taken from: https://www.whitehouse.gov/briefing-room/speeches-and-remarks
-Next article to add: September 27
+Next article to add: September 14
+
+Currently using a corpus size of about 100k words.
