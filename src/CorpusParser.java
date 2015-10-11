@@ -59,9 +59,9 @@ class CorpusParser {
 		//Reader
         BufferedReader br;
         try {
-            br = new BufferedReader(new FileReader("../corpus/corpus_speeches.txt"));
+            br = new BufferedReader(new FileReader("../corpus/corpus_TED_speeches.txt"));
         } catch (FileNotFoundException e) {
-            br = new BufferedReader(new FileReader("corpus/corpus_speeches.txt"));
+            br = new BufferedReader(new FileReader("corpus/corpus_TED_speeches.txt"));
         }
         //List of previous words, index 0 contains most recent, size <= 3
         LinkedList<String> wordQueue = new LinkedList<>();
@@ -69,9 +69,14 @@ class CorpusParser {
         //Go through the corpus
         String line = br.readLine();
         while (line != null) {
+            //Remove timestamp lines
+            if (line.matches("^([0-9]|0[0-9]|1[0-9]|2[0-3]):[0-5][0-9]$")) {
+                line = br.readLine();
+                continue;
+            }
+            
             //Remove unnecessary whitespace
             line = line.trim().replaceAll("\\s+", " ");
-            
             
             //Replace -- with ,
             line = line.replaceAll(" --", ",");
