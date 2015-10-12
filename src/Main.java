@@ -17,7 +17,7 @@ class Main {
             out.close();
             fileOut.close();
         } catch(IOException i) {
-            System.out.println("Exception occured");
+            System.out.println("Exception occurred");
             i.printStackTrace();
         }
     }

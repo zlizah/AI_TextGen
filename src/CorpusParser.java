@@ -7,7 +7,7 @@ import java.io.*;
 class CorpusParser {
     private static HashSet<String> startWords;
     public static int numberOfWords = 0;
-	
+    private final static String CORPUS_PATH = "corpus/corpus_speeches.txt";
 		
 	//Read unigram hashmap from file
 	@SuppressWarnings("unchecked")
@@ -59,9 +59,10 @@ class CorpusParser {
 		//Reader
         BufferedReader br;
         try {
-            br = new BufferedReader(new FileReader("../corpus/corpus_TED_speeches.txt"));
+
+            br = new BufferedReader(new FileReader("../" + CORPUS_PATH));
         } catch (FileNotFoundException e) {
-            br = new BufferedReader(new FileReader("corpus/corpus_TED_speeches.txt"));
+            br = new BufferedReader(new FileReader(CORPUS_PATH));
         }
         //List of previous words, index 0 contains most recent, size <= 3
         LinkedList<String> wordQueue = new LinkedList<>();
@@ -144,7 +145,8 @@ class CorpusParser {
                 //Append to list of start words (possibly)
                 if (word.length() > 1 && !word.equals("And") 
                         && word.substring(0, 1).matches("[A-Z]")
-                        && !NGrams.isTerminal(word)) {
+                        && (wordQueue.size() <= 1 ||
+                        !NGrams.isTerminal(wordQueue.get(1)))) {
                     startWords.add(word);
                 }
 

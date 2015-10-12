@@ -108,7 +108,7 @@ class TextGenerator {
                     sentenceLength);
 
             // End sentence
-            if (nextWord.endsWith(".")) {
+            if (NGrams.isTerminal(nextWord)) {
                 System.err.println("Sentence length: " + sentenceLength);
                 sentenceLength = 0;
             } else {
