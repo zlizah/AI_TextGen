@@ -59,10 +59,10 @@ class CorpusParser {
 		//Reader
         BufferedReader br;
         try {
-
             br = new BufferedReader(new FileReader("../" + CORPUS_PATH));
         } catch (FileNotFoundException e) {
             br = new BufferedReader(new FileReader(CORPUS_PATH));
+
         }
         //List of previous words, index 0 contains most recent, size <= 3
         LinkedList<String> wordQueue = new LinkedList<>();
@@ -102,7 +102,8 @@ class CorpusParser {
                 }
                 
                 // (Applause and laughter)
-                if(word.startsWith("(") && word.endsWith(")")) continue;
+                if(word.contains("(") || word.contains(")")) continue;
+                if(word.contains("\"")) continue;
                 
 //                //Count number of occurrences in the entire corpus (Used for Interpolation)
 //                if(allWords.containsKey(word)) {
