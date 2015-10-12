@@ -57,7 +57,7 @@ class NGrams {
         ArrayList<String> possibleWords = new ArrayList<>(uniWord.occurrences.keySet());
 
         // Make sure to keep bi-gram probability above 0 as a fallback
-        double[] lambdas = {0.03, 0.17, 0.6, 0.2};
+        double[] lambdas = {0.05, 0.15, 0.5, 0.3};
 
         for (String word : possibleWords) {
             double uniOcc = uniWord.getNOcc(word, sentenceLength); //P(w_n)
