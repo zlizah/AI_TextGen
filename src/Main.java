@@ -80,15 +80,17 @@ class Main {
                 System.exit(0);
         }
 
-        System.out.println("Done");
         //Send n-grams to TextGenerator
         TextGenerator textGen = new TextGenerator(ngrams);
-        System.out.println("Generating");
 
         //Generate text
         String text = textGen.generateText(words);
         text = text.replaceAll("\\s+", " ");
+        
+        //Print text
+        System.out.println("\n***************************\n");
         System.out.println(text);
+        System.out.println("\n***************************\n");
     }
 }
 

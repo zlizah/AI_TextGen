@@ -101,17 +101,20 @@ class CorpusParser {
                     continue;
                 }
                 
-                // (Applause and laughter)
-                if(word.contains("(") || word.contains(")")) continue;
-                if(word.contains("\"")) continue;
+                //Ignore the applause and laughter (word matches '(xxx)')
+                if(word.contains("(") && word.contains(")")) continue;
                 
-//                //Count number of occurrences in the entire corpus (Used for Interpolation)
-//                if(allWords.containsKey(word)) {
-//                    allWords.put(word, 1 + (allWords.get(word)));
-//                } else {
-//                    allWords.put(word, 1);
-//                }
-//                numberOfWords += 1;
+                //Remove " and ( symbols
+                word.replaceAll("\"", "");
+                word.replaceAll("\\(", "");
+                
+               //Count number of occurrences in the entire corpus (Used for Interpolation)
+               // if(allWords.containsKey(word)) {
+                   // allWords.put(word, 1 + (allWords.get(word)));
+               // } else {
+                   // allWords.put(word, 1);
+               // }
+               // numberOfWords += 1;
                 getDefaultGram(uni_grams, "UNI").addObservation(word);
 
 

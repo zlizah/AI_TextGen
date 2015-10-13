@@ -109,7 +109,7 @@ class TextGenerator {
 
             // End sentence
             if (NGrams.isTerminal(nextWord)) {
-                System.err.println("Sentence length: " + sentenceLength);
+                //System.err.println("Sentence length: " + sentenceLength);
                 sentenceLength = 0;
             } else {
                 ++sentenceLength;
